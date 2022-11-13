@@ -1,18 +1,12 @@
 import axios from 'axios';
-import {useState, useEffect, useCallback, useTheme} from 'react';
-import { Provider as PaperProvider } from 'react-native-paper';
-import BotaoMain from './components/BotaoMain/BotaoMain';
+import {useState, useEffect, useCallback, useTheme, useMemo} from 'react';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {Button, Appbar} from 'react-native-paper';
 
-import {
-  StyleSheet,
-  Text,
-  View,
-  ImageBackground,
-  TextInput,
-  ActivityIndicator,
-  Button,
-  Image,
-} from 'react-native';
+import {Text, StyleSheet, View, ImageBackground, Linking} from 'react-native';
+import {position} from 'native-base/lib/typescript/theme/styled-system';
+import {white} from 'react-native-paper/lib/typescript/styles/colors';
+import { Center } from 'native-base';
 
 const styles = StyleSheet.create({
   root: {
@@ -41,82 +35,111 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
-  cityCountryText: {
-    color: '#fff',
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-
-  dateText: {
-    color: '#fff',
-    fontSize: 22,
-    marginVertical: 10,
-  },
-
-  tempText: {
-    fontSize: 45,
-    color: '#fff',
-    marginVertical: 10,
-  },
-
-  minMaxText: {
-    fontSize: 22,
-    color: '#fff',
-    marginVertical: 10,
-    fontWeight: 'bold',
-  },
-
   BotaoMain: {
-    flex: 1,
+    padding: 5,
+    margin: 5,
+    marginTop: 550,
+    position: 'absolute',
+    alignContent: 'center',
+    alignSelf: 'center',
+  },
+
+  BotaoMain2: {
+    padding: 5,
+    margin: 5,
+    marginTop: 600,
+    position: 'absolute',
+    alignContent: 'center',
+    alignSelf: 'center',
+  },
+
+  botaomesmo1: {
+    width: 250,
+    height: 45,
+    alignContent: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginTopic: 450,
+  },
+
+  botaomesmo2: {
+    width: 250,
+    height: 45,
+    alignContent: 'center',
+    justifyContent: 'center',
+  },
+
+  FactText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 22,
+    textAlign: 'center',
+    marginTop: 60,
+  },
+
+  viewTexto: {
+    alignSelf: 'center',
+    position: 'absolute',
+    marginTop: 200,
+  },
+
+  Header: {
+    justifyContent: 'center',
   }
 });
 
 export default function App() {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const fetchDataHandler = useEffect(() => {
-    setLoading(true);
-    axios
-      .get('https://meowfacts.herokuapp.com')
-      .then((res) => {
-        setData(res.data.data);
-        
-      })
-    .finally(() => setLoading(false));
-    
-})
-
+  const PuxaFato = useCallback(() => {
+    axios.get('https://meowfacts.herokuapp.com/').then(res => {
+      setData(res.data.data);
+      setLoading(false);
+    });
+  });
 
   return (
     <PaperProvider>
-    <View style={styles.root}>
-    
-      <ImageBackground
-        source={require('./assets/images/background.jpg')}
-        resizeMode="cover"
-        style={styles.image}>
+      <View style={styles.root}>
+        <ImageBackground
+          source={require('./assets/images/background.jpg')}
+          resizeMode="cover"
+          style={styles.image}>
+          <Appbar.Header>
+          <Appbar.Content title="Um fato aleatorio sobre gato" />
+          </Appbar.Header>
 
 
-      {loading && (
-        <View>
-          <Button onClick={fetchDataHandler} title="resda">
+          {data && (
+            <View style={styles.viewTexto}>
+              <Text variant="headlineSmall" style={styles.FactText}>
+                {data}
+              </Text>
+            </View>
+          )}
 
-          </Button>
-        </View>
-        )}
-
-        {data && (
-          <View style={styles.infoView}>
-            <Text>{data}</Text>
+          <View style={styles.BotaoMain}>
+            <Button
+              onPress={PuxaFato}
+              mode="contained"
+              style={styles.botaomesmo1}>
+              Aperta ai amor
+            </Button>
           </View>
-        )}
-      </ImageBackground>
-      
-    </View>
+          <View style={styles.BotaoMain2}>
+            <Button
+              mode="contained"
+              style={styles.botaomesmo2}
+              onPress={() => {
+                Linking.openURL(
+                  'https://api.whatsapp.com/send/?phone=5551997252771&text=OIIII%20AMOOOOOOOOOOOOOOOOOOR&type=phone_number&app_absent=0',
+                );
+              }}>
+              SOS AMOR
+            </Button>
+          </View>
+          
+        </ImageBackground>
+      </View>
     </PaperProvider>
   );
 }
